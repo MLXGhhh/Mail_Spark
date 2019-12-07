@@ -14,7 +14,7 @@ import org.apache.spark.streaming.kafka010.KafkaUtils
   **/
 object KafkaConsumerDemo {
   def main(args: Array[String]): Unit = {
-    val conf = new SparkConf().setAppName("Consumer").set("spark.streaming.kafka.consumer.poll.ms", "10000").setMaster("local[*]")
+    val conf = new SparkConf().setAppName("Consumer").setMaster("local[*]")
     val spark = SparkSession.builder().config(conf).getOrCreate()
     val ssc = new StreamingContext(spark.sparkContext, Seconds(5))
     val topic = Set("kafka-action")
