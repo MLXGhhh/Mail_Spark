@@ -1,22 +1,20 @@
-package cnic.xiandao
-
+package SparkToKafka
 import org.apache.kafka.clients.consumer.{ConsumerConfig, ConsumerRecord}
 import org.apache.kafka.common.serialization.StringDeserializer
 import org.apache.spark.SparkConf
 import org.apache.spark.sql.SparkSession
 import org.apache.spark.streaming._
-import org.apache.spark.streaming.dstream.InputDStream
+import org.apache.spark.streaming.dstream.{DStream, InputDStream}
+import org.apache.spark.streaming.kafka010.LocationStrategies.PreferConsistent
 import org.apache.spark.streaming.kafka010.ConsumerStrategies.Subscribe
 import org.apache.spark.streaming.kafka010.KafkaUtils
-import org.apache.spark.streaming.kafka010.LocationStrategies.PreferConsistent
-
 /**
   *@Description SparkStreaming消费kafka数据 测试代码
   *@Author hky
   **/
 object KafkaConsumerDemo {
   def main(args: Array[String]): Unit = {
-    val conf = new SparkConf().setAppName("Consumer").setMaster("local[*]")
+    val conf = new SparkConf().setAppName("Consumer").set("spark.streaming.kafka.consumer.poll.ms", "10000").setMaster("local[*]")
     val spark = SparkSession.builder().config(conf).getOrCreate()
     val ssc = new StreamingContext(spark.sparkContext, Seconds(5))
     val topic = Set("kafka-action")
@@ -33,7 +31,6 @@ object KafkaConsumerDemo {
                                                                           Subscribe[String, String](topic, kafkaPrams))
     //val value: DStream[String] = stream.map(x => x.value)
     stream.saveAsTextFiles("F:\\kafka-consumer")
-    
     ssc.start()
     ssc.awaitTermination()
   }
